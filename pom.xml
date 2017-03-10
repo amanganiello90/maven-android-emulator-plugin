@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.my</groupId>
+	<artifactId>test-runner</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	
+	
+    <build>
+		<plugins>
+			 <plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>startEmulator</id>
+						<phase>initialize</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<exec executable="cmd" spawn="true">
+									<arg value="/c" />
+									<arg value="emulator" />
+									<arg value="-avd" />
+									<arg value="${apk-device}" />
+								</exec>
+							</target>
+						</configuration>
+					</execution>
+					<execution>
+						<id>start appium Server </id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<exec executable="cmd"  spawn="true">
+									<arg value="/c" />
+									<arg value="cd" />
+									<arg value="${env.APPIUM_HOME}" />
+									<arg value="&amp;" />
+									<arg value="node" />
+									<arg value="appium" />
+								</exec>
+							</target>
+						</configuration>
+					</execution>
+					
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>download app and install</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>exec</goal>
+						</goals>
+						<configuration>
+							<executable>node</executable>
+							<arguments>
+								<argument>${basedir}/scripts/automation-test.js</argument>
+								<argument>${apk-profile}</argument>
+								<argument>${apk-version}</argument>
+							</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>UNPACK DEPENDENCIES</id>
+						<phase>generate-test-sources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>myGroup</groupId>
+									<artifactId>myArtifact</artifactId>
+									<version>myArtifactVersion</version>
+									<type>jar</type>
+									<outputDirectory>${basedir}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin> 	
+		</plugins>
+	</build>
+</project>
